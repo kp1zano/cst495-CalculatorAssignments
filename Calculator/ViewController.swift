@@ -68,74 +68,23 @@ class ViewController: UIViewController {
     //Makes sure the user entered a number.
     @IBAction func operate(_ sender: UIButton) {
         
-//        if userIsInTheMiddleOfTypingANumber{
-//            enter()
-//        }
-//        if let operation = sender.currentTitle{
-//            
-//            if let result = brain.performOperation(operation){
-//            history.text! = history.text! + operation
-//            displayValue = result
-//                
-//            }else{
-//                displayValue = 0
-//            }
-//        }
-        
-        if userIsInTheMiddleOfTypingANumber {
+        if userIsInTheMiddleOfTypingANumber{
             enter()
         }
-        if let operation = sender.currentTitle {
-            displayResult = brain.performOperation(operation)
-        }
-    }
-    @IBAction func Sign() {
-        
-        if userIsInTheMiddleOfTypingANumber {
-            if displayValue != nil {
-                displayResult = CalculatorBrainEvaluationResult.Success(displayValue! * -1)
+        if let operation = sender.currentTitle{
+            
+            if let result = brain.performOperation(operation){
+            history.text! = history.text! + operation
+            display.text! = result
                 
-                // set userIsInTheMiddleOfTypingANumber back to true as displayResult will set it to false
-                userIsInTheMiddleOfTypingANumber = true
+            }else{
+                displayValue = 0
             }
-        } else {
-            displayResult = brain.performOperation("ᐩ/-")
         }
-
     }
 
 
-    @IBAction func pi() {
-        
-        if userIsInTheMiddleOfTypingANumber {
-            enter()
-        }
-        displayResult = brain.pushConstant(symbol: "π")
-    }
 
-    @IBAction func Undo() {
-        
-        if userIsInTheMiddleOfTypingANumber == true {
-            if display.text!.characters.count > 1 {
-                display.text = String(display.text!.characters.dropLast())
-            } else {
-                displayResult = CalculatorBrainEvaluationResult.Success(DefaultDisplayResult.Startup)
-            }
-        } else {
-            brain.removeLastOpFromStack()
-            displayResult = brain.evaluateAndReportErrors()
-        }
-    }
-    
-    
-    @IBAction func setM() {
-        
-        userIsInTheMiddleOfTypingANumber = false
-        if displayValue != nil {
-            brain.variableValues["M"] = displayValue!
-        }
-        displayResult = brain.evaluateAndReportErrors()
-    }
     
 
     
@@ -148,59 +97,23 @@ class ViewController: UIViewController {
     
     @IBAction func enter() {
         
-//        if let result = brain.pushOperand(displayValue){
-//            displayValue = result
-//        }
-//        else{
-//            userIsInTheMiddleOfTypingANumber = false
-//            displayValue = 0
-//        }
-        
-        userIsInTheMiddleOfTypingANumber = false
-        if displayValue != nil {
-            //displayValue = brain.pushOperand(displayValue!)
-            display.text! = "M"
+        if let result = brain.pushOperand(displayValue){
+            displayValue = result
         }
-    }
-    
-    var displayValue: Double?{
-        if let displayValue = NumberFormatter().number(from: display.text!) {
-            return displayValue.doubleValue
-        }
-        return nil
-    }
-    
-    
-    
-    var displayResult: CalculatorBrainEvaluationResult? {
-        get {
-            if let displayValue = displayValue {
-                return .Success(displayValue)
-            }
-            if display.text != nil {
-                return .Failure(display.text!)
-            }
-            return .Failure("Error")
-        }
-        set {
-            if newValue != nil {
-                switch newValue! {
-                case let .Success(displayValue):
-                    display.text = "\(displayValue)"
-                case let .Failure(error):
-                    display.text = error
-                }
-            } else {
-                //display.text = DefaultDisplayResult.Error
-                display.text = ""
-            }
+        else{
             userIsInTheMiddleOfTypingANumber = false
-            
-            //            if !brain.description.isEmpty {
-            //                history.text = " \(brain.description) ="
-            //            } else {
-            //                history.text = defaultHistoryText
-            //            }
+            displayValue = 0
+        }
+
+    }
+    
+    var displayValue: Double{
+        get{
+            return NumberFormatter().number(from: display.text!)!.doubleValue
+        }
+        set{
+            display.text = "\(newValue)"
+            userIsInTheMiddleOfTypingANumber = false
         }
     }
 }
